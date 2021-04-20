@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "6761019245",
+    "project_id": "cafeorderapp-a7803",
+    "storage_bucket": "cafeorderapp-a7803.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6761019245:android:7e3aa4d16a76d417658c64",
+        "android_client_info": {
+          "package_name": "com.example.do_an_nv_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6761019245-imbbhpq5n5hfrl958rkftses38rcti2i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVcDYPqKaeHnDOStV4qiMcFRAXyToIqnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6761019245-imbbhpq5n5hfrl958rkftses38rcti2i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6761019245:android:d241126c3388d2c0658c64",
+        "android_client_info": {
+          "package_name": "com.example.do_an_tn_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6761019245-imbbhpq5n5hfrl958rkftses38rcti2i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVcDYPqKaeHnDOStV4qiMcFRAXyToIqnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6761019245-imbbhpq5n5hfrl958rkftses38rcti2i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
