@@ -8,7 +8,7 @@ class NotificationItem extends StatelessWidget {
   NotificationItem({this.notification});
   @override
   Widget build(BuildContext context) {
-    DateFormat dateFormat = DateFormat('MMMM d H:mm:s');
+    DateFormat dateFormat = DateFormat('MMMM d HH:mm:ss a');
     if(notification.type == 'order'){
       //Order Notification
       return Container(
@@ -51,9 +51,13 @@ class NotificationItem extends StatelessWidget {
               Row(children: [
                 Icon(Icons.perm_identity_outlined, size: 17, color: Colors.black54,),
                 SizedBox(width: 10,),
-                Text('Nhân Viên Order: ${notification.waiterName}', style: TextStyle(fontSize: 14, color: Colors.black87),),
-                SizedBox(width: 20,),
-                Text('MSNV: ${notification.waiterID}', style: TextStyle(fontSize: 14, color: Colors.black87),),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Nhân Viên Order: ${notification.waiterName}', style: TextStyle(fontSize: 14, color: Colors.black87),),
+                    Text('MSNV: ${notification.waiterID}', style: TextStyle(fontSize: 14, color: Colors.black87),),
+                  ],
+                )
               ],),
               SizedBox(height: 10,),
               Row(children: [
@@ -108,9 +112,13 @@ class NotificationItem extends StatelessWidget {
               Row(children: [
                 Icon(Icons.perm_identity_outlined, size: 17, color: Colors.black54,),
                 SizedBox(width: 10,),
-                Text('Nhân Viên thanh toán: ${notification.waiterName}', style: TextStyle(fontSize: 14, color: Colors.black87),),
-                SizedBox(width: 20,),
-                Text('MSNV: ${notification.waiterID}', style: TextStyle(fontSize: 14, color: Colors.black87),),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Nhân Viên thanh toán: ${notification.waiterName}', style: TextStyle(fontSize: 14, color: Colors.black87),),
+                    Text('MSNV: ${notification.waiterID}', style: TextStyle(fontSize: 14, color: Colors.black87),),
+                  ],
+                )
               ],),
               SizedBox(height: 10,),
               Row(children: [

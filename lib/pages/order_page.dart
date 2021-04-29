@@ -19,7 +19,6 @@ class OrderPage extends StatefulWidget {
 
 }
 class _OrderPageState extends State<OrderPage>{
-
   @override
   Widget build(BuildContext context) {
     FireStoreDatabaseTables tables = Provider.of<FireStoreDatabaseTables>(context);
@@ -44,7 +43,7 @@ class _OrderPageState extends State<OrderPage>{
           body: StreamBuilder<List<CartsSnapshot>>(
             stream: tables.getCartsFromFirebase(_tableID, widget.orderID),
             builder: (context,cartsSnapshot){
-              List<CartItem> cartItems =[];
+              List<CartItem> cartItems = [];
               if(cartsSnapshot.hasData){
                 if(cartsSnapshot.data.length == 0){
                   return Center(child: Text('Chưa có order nào' ,style: TextStyle(fontSize: 25),));
@@ -52,13 +51,13 @@ class _OrderPageState extends State<OrderPage>{
                 else{
                   String dateString = cartsSnapshot.data.first.carts.time.toDate().toString();
                   DateTime date = DateFormat('yyyy-MM-dd hh:mm:ss').parse(dateString);
-                  String stringDate = DateFormat('MMMM d h:mm:s').format(date);
-                  void _confirmOrder(){
+                  String stringDate = DateFormat('MMMM d hh:mm:ss').format(date);
+                  void _confirmOrder() async{
                     int total = 0;
                     cartItems.forEach((cartItem) { total+=(cartItem.price*cartItem.quantity); });
-                    tables.comfirmOrder(widget.orderID, cartItems, widget.tableNumber, total);
-                    messages.deleteNotificationNotRead(_tableID, 'order');
-                    cartsSnapshot.data.forEach((carts) {
+                    await tables.comfirmOrder(widget.orderID, cartItems, widget.tableNumber, total);
+                    await messages.deleteNotificationNotRead(_tableID, 'order');
+                    await cartsSnapshot.data.forEach((carts) {
                       carts.docs.update({
                         'check': true
                       });
@@ -70,9 +69,6 @@ class _OrderPageState extends State<OrderPage>{
                     children: [
                       Center(
                         child: Text( 'Order bàn ${_tableID}',
-                            // _tableID != 0
-                            // ? 'Hóa đơn bàn: ${_tableID}'
-                            // : 'Hóa đơn mang về',
                             style: TextStyle(fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Pacifico',
@@ -96,7 +92,8 @@ class _OrderPageState extends State<OrderPage>{
                       Expanded(
                         child: Container(
                           color: Colors.white,
-                          child: ListView.builder(
+                          child:
+                          ListView.builder(
                             itemBuilder: (context, index){
                               return Column(
                                 mainAxisSize: MainAxisSize.min,

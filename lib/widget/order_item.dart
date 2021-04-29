@@ -2,6 +2,7 @@ import 'package:do_an_tn_app/modules/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:transparent_image/transparent_image.dart';
 class OrderItem extends StatelessWidget {
   // final String id;
   // final String productId;
@@ -31,7 +32,7 @@ class OrderItem extends StatelessWidget {
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(cartItem.description),
+                  Text(cartItem.note),
                 ],
               ),
             ),
@@ -67,10 +68,6 @@ class OrderItem extends StatelessWidget {
               height: 50.0,
               width: 50.0,
               decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage('assets/images/${cartItem.image}'),
-                      fit: BoxFit.cover
-                  ),
                   boxShadow:  [
                     BoxShadow(
                         offset: Offset(2,4),
@@ -78,6 +75,11 @@ class OrderItem extends StatelessWidget {
                         blurRadius: 4.0
                     )
                   ]
+              ),
+              child: FadeInImage.memoryNetwork(
+                  fit: BoxFit.cover,
+                  placeholder: kTransparentImage,
+                  image: cartItem.image
               ),
             ),
             SizedBox(width: 10,),
@@ -91,7 +93,7 @@ class OrderItem extends StatelessWidget {
                     height: 20,
                     child: ListView(
                       children: [
-                        Text('Ghi chú: ${cartItem.description}',style: TextStyle(fontSize: 15, color: Colors.black),)
+                        Text('Ghi chú: ${cartItem.note}',style: TextStyle(fontSize: 15, color: Colors.black),)
                       ],
                     ),
                   )

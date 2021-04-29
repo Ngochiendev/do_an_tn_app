@@ -2,14 +2,14 @@ import 'package:do_an_tn_app/datas/data.dart';
 import 'package:do_an_tn_app/pages/add_beverages.dart';
 import 'package:do_an_tn_app/pages/chat_page.dart';
 import 'package:do_an_tn_app/pages/chechout_page.dart';
+import 'package:do_an_tn_app/pages/employes_page.dart';
 import 'package:do_an_tn_app/pages/home_page.dart';
+import 'package:do_an_tn_app/pages/menu_page.dart';
 import 'package:do_an_tn_app/pages/notification_page.dart';
 import 'package:do_an_tn_app/pages/order_page.dart';
-import 'package:do_an_tn_app/widget/table_item.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 class TablePage extends StatefulWidget {
   static const String routeName = 'TablePage';
@@ -135,11 +135,39 @@ class _TablePageState extends State<TablePage> {
         return SafeArea(
             child: Scaffold(
                 appBar: AppBar(
-                  // actions: [
-                  //   IconButton(icon: Icon(Icons.add), onPressed: (){
-                  //     Navigator.pushNamed(context, AddBeverages.routeName);
-                  //   })
-                  // ],
+                  actions: [
+                    // TextButton(
+                    //   child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 20),),
+                    //   onPressed: (){
+                    //     Navigator.pushNamed(context, MenuPage.routeName);
+                    //   },
+                    // )
+                    PopupMenuButton(
+                      onSelected: (result){
+                        switch(result){
+                          case 'menu':
+                            Navigator.pushNamed(context, MenuPage.routeName);
+                            break;
+                          case 'nv':
+                            Navigator.pushNamed(context, EmployesPage.routeName);
+                            break;
+                          default:
+                        }
+                      },
+                      itemBuilder: (context){
+                        return <PopupMenuEntry<String>>[
+                          PopupMenuItem(
+                            child: Text('Menu'),
+                            value: 'menu',
+                          ),
+                          PopupMenuItem(
+                            child: Text('Nhân viên'),
+                            value: 'nv',
+                          )
+                        ];
+                      },
+                    )
+                  ],
                   title: Center(
                     child: Text(titles[_selectedIndex],
                       style: TextStyle(fontSize: 30, fontFamily: 'Berkshire Swash', fontWeight: FontWeight.bold),

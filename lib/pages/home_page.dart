@@ -8,18 +8,28 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(20),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3/2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-      ),
+    return ListView.separated(
       itemCount: 15,
-      itemBuilder: (context, index){
+      itemBuilder: (context,index){
         return TableItem(tableNum: index+1);
       },
+      separatorBuilder: (context, index) => Divider(
+        color: Colors.grey,
+        thickness: 1.5,
+      ),
     );
+    //   GridView.builder(
+    //   padding: const EdgeInsets.all(20),
+    //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    //     crossAxisCount: 2,
+    //     childAspectRatio: 3/2,
+    //     mainAxisSpacing: 10,
+    //     crossAxisSpacing: 10,
+    //   ),
+    //   itemCount: 15,
+    //   itemBuilder: (context, index){
+    //     return TableItem(tableNum: index+1);
+    //   },
+    // );
   }
 }

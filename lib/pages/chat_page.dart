@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:do_an_tn_app/datas/chat_data.dart';
-import 'package:do_an_tn_app/datas/device_token.dart';
 import 'package:do_an_tn_app/widget/messages_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,12 +37,6 @@ class _ChatPageState extends State<ChatPage> {
         "Authorization": "key=AAAAAZL8920:APA91bEi6ArWOfYha7oZK4itXBmkVhSSZGGw0Lo0HX6sDsW1-xPpz-xLpvC4bic2m17wUnELzBNR3w3iIs5Q542nrD71di1OThQst86oYWQhrUKfHrYeMMAgxhVRmIPiMInlrq-QSk57"},
       body: json.encode(body),
     );
-    // if(response.statusCode == 200 || response.statusCode == 201){
-    //   print('Response Body: ${response.body}');
-    //   return response;
-    // }
-    // print('Response Body: ${response.body}');
-    // print('Response Status: ${response.statusCode}');
   }
   @override
   Widget build(BuildContext context) {
@@ -50,7 +44,16 @@ class _ChatPageState extends State<ChatPage> {
     void sendMessage() async{
       FocusScope.of(context).unfocus();
       await firebaseMessage.upLoadMessage(message, DateTime.now());
-      await deviceToken.forEach((deviceToken) { _sendMessage(deviceToken);});
+      await FirebaseFirestore.instance.collection('tokens').get()
+          .then((QuerySnapshot querySnapshot) {
+            if(querySnapshot.docs.length>0){
+              querySnapshot.docs.forEach((DocumentSnapshot doc) {
+                _sendMessage(doc.data()['deviceToken']);
+              });
+            }
+            else print('No Divice');
+        }
+      );
       setState(() {
         message = '';
       });

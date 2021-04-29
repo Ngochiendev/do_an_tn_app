@@ -1,20 +1,11 @@
 import 'package:do_an_tn_app/modules/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transparent_image/transparent_image.dart';
 class CheckOutItem extends StatelessWidget {
   final CartItem cartItem;
-  // final String id;
-  // final String productId;
-  // final int quantity;
-  // final int price;
-  // final String name;
   CheckOutItem({
     @required this.cartItem
-    // @required this.id,
-    // @required this.productId,
-    // @required this.quantity,
-    // @required this.price,
-    // @required this.name,
   });
   @override
   Widget build(BuildContext context) {
@@ -37,10 +28,6 @@ class CheckOutItem extends StatelessWidget {
             height: 50.0,
             width: 50.0,
             decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('assets/images/${cartItem.image}'),
-                    fit: BoxFit.cover
-                ),
                 boxShadow:  [
                   BoxShadow(
                       offset: Offset(2,4),
@@ -48,6 +35,11 @@ class CheckOutItem extends StatelessWidget {
                       blurRadius: 4.0
                   )
                 ]
+            ),
+            child: FadeInImage.memoryNetwork(
+                fit: BoxFit.cover,
+                placeholder: kTransparentImage,
+                image: cartItem.image
             ),
           ),
           SizedBox(width: 10,),

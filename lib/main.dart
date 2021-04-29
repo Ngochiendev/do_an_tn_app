@@ -1,9 +1,11 @@
 import 'package:do_an_tn_app/datas/chat_data.dart';
 import 'package:do_an_tn_app/datas/data.dart';
-import 'package:do_an_tn_app/modules/messages.dart';
 import 'package:do_an_tn_app/pages/add_beverages.dart';
 import 'package:do_an_tn_app/pages/chat_page.dart';
 import 'package:do_an_tn_app/pages/chechout_page.dart';
+import 'package:do_an_tn_app/pages/edit_beverages_page.dart';
+import 'package:do_an_tn_app/pages/employes_page.dart';
+import 'package:do_an_tn_app/pages/menu_page.dart';
 import 'package:do_an_tn_app/pages/notification_page.dart';
 import 'package:do_an_tn_app/pages/order_page.dart';
 import 'package:do_an_tn_app/pages/order_page_no_item.dart';
@@ -23,7 +25,7 @@ const AndroidNotificationChannel  channel = AndroidNotificationChannel(
   'high_importance_channel', // id
   'High Importance Notifications', // title
   'This channel is used for important notifications.', // description
-  importance: Importance.high,);
+  importance: Importance.max,);
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
 Future<void> main() async{
@@ -51,6 +53,8 @@ class MyApp extends StatelessWidget {
         Provider<FireStoreDatabaseTables>(create: (context) => FireStoreDatabaseTables()),
         Provider<FireStoreDataNotification>(create: (context) => FireStoreDataNotification()),
         Provider<FireStoreDatabaseMessage>(create: (context) => FireStoreDatabaseMessage()),
+        Provider<FireStoreDatabaseCatagory>(create: (context) => FireStoreDatabaseCatagory()),
+        Provider<FireStoreDatabaseBeverage>(create: (context) => FireStoreDatabaseBeverage()),
         ChangeNotifierProvider(create: (_) => NotificationService()),
 
       ],
@@ -65,6 +69,9 @@ class MyApp extends StatelessWidget {
           NotificationPage.routeName: (context) => NotificationPage(),
           ChatPage.routeName: (context) => ChatPage(),
           AddBeverages.routeName: (context) => AddBeverages(),
+          MenuPage.routeName: (context) => MenuPage(),
+          EditBeveragesPage.routeName: (context) => EditBeveragesPage(),
+          EmployesPage.routeName: (context) => EmployesPage(),
         },
         home: TablePage(),
       ),

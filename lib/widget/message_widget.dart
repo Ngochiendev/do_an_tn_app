@@ -10,13 +10,16 @@ class MessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = Radius.circular(12);
     final borderRadius = BorderRadius.all(radius);
+    String getInitials(String name) => name.isNotEmpty
+        ? name.trim().split(' ').map((l) => l[0]).take(3).join()
+        : '';
     return Row(
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         if(!isMe)
           CircleAvatar(
             backgroundColor: Colors.grey.shade300,
-            child: Text('NV', style: TextStyle(fontSize: 12, color: Colors.blue), ),
+            child: Text(getInitials(message.sender), style: TextStyle(fontSize: 12, color: Colors.blue), ),
           ),
         InkWell(
           onLongPress: (){

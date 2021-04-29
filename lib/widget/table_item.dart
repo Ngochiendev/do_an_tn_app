@@ -7,6 +7,7 @@ import 'package:do_an_tn_app/pages/order_page.dart';
 import 'package:do_an_tn_app/pages/order_page_no_item.dart';
 import 'package:do_an_tn_app/services/notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 class TableItem extends StatefulWidget {
@@ -39,63 +40,17 @@ class _TableItemState extends State<TableItem>{
               stream: tables.getCartsFromFirebase(widget.tableNum.toString(), orderID),
               builder: (context, cartSnapshot){
                 if(cartSnapshot.hasData){
-                  Future<void> _showWaiterName() async {
-                    String waiterNames = '';
-                    cartSnapshot.data.forEach((docs)=> waiterNames+= docs.carts.waiterName+ '(ms: '
-                        + docs.carts.waiterID +')' +'\n');
-                    return showDialog<void>(
-                      context: context,
-                      barrierDismissible: false, // user must tap button!
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Nhân viên order'),
-                          content: SingleChildScrollView(
-                            child: ListBody(
-                              children: <Widget>[
-                                Text(waiterNames),
-                              ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Xác nhận'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
+                  String getEmployesName(){
+                    String names = '';
+                    cartSnapshot.data.forEach((snapshot) {
+                        names+=snapshot.carts.waiterName + ', ';
+                      }
                     );
+                    return names;
                   }
-                  Future<void> _showWaiterNameRCO() async {
-                    String waiterName = orderSnapshot.data.first.orders.waiterRCO;
-                    return showDialog<void>(
-                      context: context,
-                      barrierDismissible: false, // user must tap button!
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Nhân viên yêu cầu thanh toán'),
-                          content: SingleChildScrollView(
-                            child: ListBody(
-                              children: <Widget>[
-                                Text(waiterName),
-                              ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Xác nhận'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
+                  DateFormat dateFormat = DateFormat('hh:mm:ss aaa');
                   if(orderSnapshot.data.first.orders.received==false){
+                    // !!!!!! Trang thai khach order !!!!!!!!!
                     return Stack(
                       children: [
                         InkWell(
@@ -104,63 +59,86 @@ class _TableItemState extends State<TableItem>{
                           },
                           splashColor: Colors.deepPurple,
                           child: Container(
-                            child: Center(
-                              child: Text('Table ${widget.tableNum}',style: TextStyle(fontSize: 20,fontFamily: 'Pacifico', color: Colors.white),),
-                            ),
                             decoration: BoxDecoration(
-                                color: Colors.amberAccent,
-                                borderRadius: BorderRadius.circular(15)
+                              borderRadius: BorderRadius.circular(30)
                             ),
-                          ),
+                            height: 140,
+                            child: Card(
+                                clipBehavior: Clip.antiAlias,
+                                elevation: 3,
+                                child: Container(
+                                  decoration: cartSnapshot.data.length > 0
+                                      ? BoxDecoration()
+                                      : BoxDecoration(
+                                          image: DecorationImage(
+                                            image: AssetImage('assets/images/ordering.jpg'),
+                                            alignment: Alignment(0.7,0),
+                                            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.dstATop),
+                                            fit: BoxFit.contain
+                                          )
+                                      ),
+                                  child: Column(
+                                    children: [
+                                      ListTile(
+                                        leading: Container(width: 30, height: 30,
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(30),
+                                              color: Colors.amberAccent
+                                          ),
+                                        ),
+                                        title: Text('Table ${widget.tableNum}',
+                                          style: TextStyle(fontSize: 23,fontFamily: 'Berkshire Swash', color: Colors.black),),
+                                        subtitle: Row(
+                                          children: [
+                                            Text('Tình trạng:',),
+                                            SizedBox(width: 5,),
+                                            Text(cartSnapshot.data.length > 0 ? 'Khách gọi nước': 'Có khách',
+                                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),)
+                                          ],
+                                        ),
+                                        trailing: cartSnapshot.data.length > 0 ?
+                                        Column(
+                                          children: [
+                                            Icon(Icons.watch_later_outlined, size: 25,),
+                                            SizedBox(height: 5,),
+                                            Text(dateFormat.format(cartSnapshot.data.first.carts.time.toDate()),
+                                              style: TextStyle(fontSize: 15, color: Colors.black),)
+                                          ],
+                                        ) : Text(''),
+                                      ),
+                                      SizedBox(height: 20,),
+                                      cartSnapshot.data.length > 0 ?
+                                      Row(
+                                        children: [
+                                          SizedBox(width: 20,),
+                                          Icon(Icons.perm_identity, size: 22,),
+                                          SizedBox(width: 5),
+                                          Text('Nhân viên order: ' ,style: TextStyle(fontSize: 15),),
+                                          Container(
+                                            width: 220,
+                                            height: 20,
+                                            child: ListView(
+                                              scrollDirection: Axis.horizontal,
+                                              children: [
+                                                Text(getEmployesName(),
+                                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),)
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ) : Container(),
+                                    ],
+                                  ),
+                                )
+                            ),
+
+                          )
                         ),
-                        Positioned(
-                            top: 0,
-                            right: 5,
-                            child: Row(
-                              children: [
-                                cartSnapshot.data.length > 0?
-                                Container(
-                                    alignment: Alignment.center,
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: Colors.red
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.add,size: 20,color: Colors.white,),
-                                        // Text('+', style: TextStyle(fontSize: 20, color: Colors.white),),
-                                        Icon(Icons.wine_bar,size: 20,color: Colors.white,)
-                                      ],
-                                    )
-                                ) : Container(),
-                              ],
-                            )
-                        ),
-                        Positioned(
-                            bottom: 3,
-                            left: 5,
-                            child: InkWell(
-                              onTap: (){
-                                _showWaiterName();
-                              },
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(40),
-                                  color: Colors.black54,
-                                ),
-                                child: Icon(Icons.perm_identity, color: Colors.white,),
-                              ),
-                            )
-                        )
                       ],
                     );
                   }
                   else {
+                    // !!!!!! Trang thai cho checkout !!!!!!!!!
                     return Stack(
                       children: [
                         InkWell(
@@ -171,69 +149,75 @@ class _TableItemState extends State<TableItem>{
                           },
                           splashColor: Colors.deepPurple,
                           child: Container(
-                            child: Center(
-                              child: Text('Table ${widget.tableNum}',style: TextStyle(fontSize: 20,fontFamily: 'Pacifico', color: Colors.white),),
-                            ),
+                            height: 140,
                             decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(15)
+                                borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Card(
+                              clipBehavior: Clip.antiAlias,
+                              elevation: 3,
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    leading: Container(width: 30, height: 30,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(30),
+                                          color: orderSnapshot.data.first.orders.requestCheckOut == true
+                                              ? Colors.green
+                                              : Colors.blue,
+                                      ),
+
+                                    ),
+                                    title: Text('Table ${widget.tableNum}',
+                                      style: TextStyle(fontSize: 23,fontFamily: 'Berkshire Swash', color: Colors.black),),
+                                    subtitle: Row(
+                                      children: [
+                                        Text('Tình trạng:',),
+                                        SizedBox(width: 5,),
+                                        Text(orderSnapshot.data.first.orders.requestCheckOut == true
+                                            ? 'Yêu cầu thanh toán'
+                                            : 'Chưa có order mới',
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),)
+                                      ],
+                                    ),
+                                    trailing: orderSnapshot.data.first.orders.requestCheckOut == true ?
+                                    Column(
+                                      children: [
+                                        Icon(Icons.watch_later_outlined, size: 25,),
+                                        SizedBox(height: 5,),
+                                        Text(dateFormat.format(orderSnapshot.data.first.orders.timeRCO.toDate()),
+                                          style: TextStyle(fontSize: 15, color: Colors.black),)
+                                      ],
+                                    ) : Text(''),
+                                  ),
+                                  SizedBox(height: 20,),
+                                  orderSnapshot.data.first.orders.requestCheckOut == true ?
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 20,),
+                                      Icon(Icons.perm_identity, size: 22,),
+                                      SizedBox(width: 5),
+                                      Text('Nhân viên thanh toán: ' ,style: TextStyle(fontSize: 15),),
+                                      Text(orderSnapshot.data.first.orders.waiterRCO,
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),)
+                                    ],
+                                  ):
+                                      Container(),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                        Positioned(
-                            top: 0,
-                            right: 5,
-                            child: Row(
-                              children: [
-                                orderSnapshot.data.first.orders.requestCheckOut == true ?
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: Colors.green
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // Text('+', style: TextStyle(fontSize: 20, color: Colors.white),),
-                                      Icon(Icons.fact_check_outlined,size: 20,color: Colors.white,)
-                                    ],
-                                  ),
-                                ) : Container(),
-                              ],
-                            )
-                        ),
-                        Positioned(
-                          bottom: 3,
-                          left: 5,
-                          child: orderSnapshot.data.first.orders.requestCheckOut == true ?
-                          InkWell(
-                            onTap: (){
-                              _showWaiterNameRCO();
-                            },
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(40),
-                                color: Colors.black54,
-                              ),
-                              child: Icon(Icons.perm_identity, color: Colors.white,),
-                            ),
-                          ) :
-                          Container(),
-                        )
                       ],
                     );
                   }
                 }
-                return CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator(),);
               },
             );
           }
           else{
+            // !!!!!! Trang thai chua co khach !!!!!!!!!
             return InkWell(
               onTap: (){
                 // DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:sss");
@@ -242,20 +226,46 @@ class _TableItemState extends State<TableItem>{
               },
               splashColor: Colors.deepPurple,
               child: Container(
-                child: Center(
-                  child: Text('Table ${widget.tableNum}',style: TextStyle(fontSize: 20,fontFamily: 'Pacifico', color: Colors.white),),
-                ),
+                height: 140,
                 decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [
-                          Colors.black54.withOpacity(0.3),
-                          Colors.black54
-                        ],
-                        end: Alignment.bottomLeft,
-                        begin: Alignment.topRight
-                    ),
-                    borderRadius: BorderRadius.circular(15)
+                    borderRadius: BorderRadius.circular(30)
                 ),
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 3,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage('assets/images/no-item.png'),
+                            alignment: Alignment(0.7,0),
+                            fit: BoxFit.contain
+                        )
+                    ),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: Container(width: 30, height: 30,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Colors.black45
+                            ),
+                          ),
+                          title: Text('Table ${widget.tableNum}',
+                            style: TextStyle(fontSize: 23,fontFamily: 'Berkshire Swash', color: Colors.black),),
+                          subtitle: Row(
+                            children: [
+                              Text('Tình trạng:',),
+                              SizedBox(width: 5,),
+                              Text('Trống', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),)
+                            ],
+                          ),
+
+                        ),
+                      ],
+                    ),
+                  )
+                ),
+                
               ),
             );
           }

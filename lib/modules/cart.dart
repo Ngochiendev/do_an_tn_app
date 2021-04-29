@@ -34,7 +34,7 @@ class CartItem {
   final int quantity;
   final String name;
   final int price;
-  final String description;
+  final String note;
   final String image;
 
   const CartItem({
@@ -42,7 +42,7 @@ class CartItem {
     @required this.price,
     @required this.name,
     @required this.image,
-    this.description,
+    this.note,
     this.quantity,
   });
   factory CartItem.fromJson(Map<String, dynamic> json) =>
@@ -50,7 +50,7 @@ class CartItem {
           id: json['id'],
           price: json['price'],
           name: json['name'],
-          description: json['desc'],
+          note: json['note'],
           quantity: json['quantity'],
           image: json['image']
       );

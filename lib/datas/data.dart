@@ -1,6 +1,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:do_an_tn_app/modules/beverages.dart';
 import 'package:do_an_tn_app/modules/cart.dart';
+import 'package:do_an_tn_app/modules/catogories.dart';
 import 'package:do_an_tn_app/modules/notifications.dart';
 import 'package:do_an_tn_app/modules/order.dart';
 
@@ -82,7 +84,7 @@ class FireStoreDatabaseTables{
         'id': item.id,
         'name': item.name,
         'quantity': item.quantity,
-        'desc': item.description,
+        'note': item.note,
         'price': item.price,
         'image': item.image
       });
@@ -101,6 +103,46 @@ class FireStoreDataNotification{
   }
   Stream<QuerySnapshot> getNotificationCount(){
     return FirebaseFirestore.instance.collection('notifications').snapshots();
-
+  }
+}
+class FireStoreDatabaseCatagory{
+  Stream<List<CatagorySnapshot>> getCatagoryFromFireBase(){
+    Stream<QuerySnapshot> streamQuerySnapshot =
+    FirebaseFirestore
+        .instance.collection("catagories")
+        .orderBy('catagoryId', descending: false)
+        .snapshots();
+    return streamQuerySnapshot.map((QuerySnapshot querySnapshot) =>
+        querySnapshot.docs.map((DocumentSnapshot documentSnapshot) =>
+            CatagorySnapshot.fromSnapshot(documentSnapshot)
+        ).toList()
+    );
+  }
+  Future<void> addCatagory(String name, String id)async{
+    return await FirebaseFirestore.instance.collection("catagories")
+        .add({
+      'catagoryId': id,
+      'catagoryName': name,
+      'catagoryIcon': ''
+    }).then((value) => print("Đã thêm"));
+  }
+}
+class FireStoreDatabaseBeverage{
+  Stream<List<BeverageSnapshot>> getBeverageFromFireBase(bool isAscending, int currentIndex){
+    Stream<QuerySnapshot> streamQuerySnapshot = currentIndex == 1 ?
+    FirebaseFirestore
+        .instance.collection("beverages")
+        .orderBy('catagoryId', descending: !isAscending)
+        .snapshots()
+        :
+    FirebaseFirestore
+        .instance.collection("beverages")
+        .orderBy('price', descending: !isAscending)
+        .snapshots();
+    return streamQuerySnapshot.map((QuerySnapshot querySnapshot) =>
+        querySnapshot.docs.map((DocumentSnapshot documentSnapshot) =>
+            BeverageSnapshot.fromSnapshot(documentSnapshot)
+        ).toList()
+    );
   }
 }
