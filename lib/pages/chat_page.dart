@@ -19,7 +19,7 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController _textController = TextEditingController();
 
   var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
-  Future<void> _sendMessage(String deviceToken) async{
+  Future<void> _sendFCMMessage(String deviceToken) async{
     Map<String, dynamic> body ={
       "to" : deviceToken,
       "collapse_key" : "type_a",
@@ -41,79 +41,89 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     FireStoreDatabaseMessage firebaseMessage = Provider.of<FireStoreDatabaseMessage>(context);
-    void sendMessage() async{
-      FocusScope.of(context).unfocus();
-      await firebaseMessage.upLoadMessage(message, DateTime.now());
-      await FirebaseFirestore.instance.collection('tokens').get()
-          .then((QuerySnapshot querySnapshot) {
-            if(querySnapshot.docs.length>0){
-              querySnapshot.docs.forEach((DocumentSnapshot doc) {
-                _sendMessage(doc.data()['deviceToken']);
-              });
-            }
-            else print('No Divice');
-        }
-      );
-      setState(() {
-        message = '';
-      });
-      _textController.clear();
-    }
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
             title: Text('Tin Nhắn', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: MessagesWidget(),
-                ),
-              ),
-              Container(
-                color: Colors.white,
-                padding: EdgeInsets.all(8),
-                child: Row(
+          body: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('tokens').snapshots(),
+            builder: (context, snapshot){
+              if(snapshot.hasData){
+                void sendMessage() async{
+                  FocusScope.of(context).unfocus();
+                  await firebaseMessage.upLoadMessage(message, DateTime.now());
+                  if(snapshot.data.docs.length>0){
+                    snapshot.data.docs.forEach((DocumentSnapshot doc) {
+                      _sendFCMMessage(doc.data()['deviceToken']);
+                    });
+                  }
+                  else print('No Divice');
+                  setState(() {
+                    message = '';
+                  });
+                  _textController.clear();
+                }
+                return Column(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: _textController,
-                        textCapitalization: TextCapitalization.sentences,
-                        autocorrect: true,
-                        enableSuggestions: true,
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey[100],
-                            labelText: 'Nhập tin nhắn',
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(width: 0),
-                                gapPadding: 10,
-                                borderRadius: BorderRadius.circular(25)
-                            )
-                        ),
-                        onChanged: (value) => setState(() {
-                          message = value;
-                        }),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: MessagesWidget(),
                       ),
                     ),
-                    SizedBox(width: 20,),
-                    GestureDetector(
-                      onTap: message.trim().isEmpty ? null : sendMessage,
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.blue
-                        ),
-                        child: Icon(Icons.send, color: Colors.white,),
+                    Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              style: TextStyle(fontSize: 22),
+                              controller: _textController,
+                              textCapitalization: TextCapitalization.sentences,
+                              autocorrect: true,
+                              enableSuggestions: true,
+                              decoration: InputDecoration(
+
+                                  filled: true,
+                                  fillColor: Colors.grey[100],
+                                  labelText: 'Nhập tin nhắn',
+                                  labelStyle: TextStyle(fontSize: 22),
+                                  contentPadding: EdgeInsets.all(20),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(width: 0),
+                                      gapPadding: 10,
+                                      borderRadius: BorderRadius.circular(25)
+                                  )
+                              ),
+                              onChanged: (value) => setState(() {
+                                message = value;
+                              }),
+                            ),
+                          ),
+                          SizedBox(width: 20,),
+                          GestureDetector(
+                            onTap: message.trim().isEmpty ? null : sendMessage,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.blue
+                              ),
+                              child: Icon(Icons.send, color: Colors.white,size: 28,),
+                            ),
+                          )
+                        ],
                       ),
-                    )
+                    ),
                   ],
-                ),
-              ),
-            ],
+                );
+              }
+              return Center(child: CircularProgressIndicator(),);
+            },
           )
       ),
     );

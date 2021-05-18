@@ -1,11 +1,12 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:do_an_tn_app/modules/beverages.dart';
-import 'package:do_an_tn_app/modules/catogories.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:do_an_tn_app/datas/data.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart' as Path;
@@ -28,7 +29,12 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
   bool added = false;
   bool picked = false;
   TextEditingController nameControl = TextEditingController();
-  TextEditingController priceControl = TextEditingController();
+  MoneyMaskedTextController priceControl = MoneyMaskedTextController(
+      decimalSeparator: '',
+      thousandSeparator: ',',
+      precision: 0,
+  );
+
   TextEditingController infoControl = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -41,24 +47,31 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Chỉnh sửa thông tin'),
+          title: Text('Chỉnh sửa thông tin',style: TextStyle(fontSize: 40,
+              fontFamily: 'Berkshire Swash',
+              fontWeight: FontWeight.bold),
+          ),
         ),
         body: SingleChildScrollView(
           child: Stack(
             children: [
               Container(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(10).copyWith(top: 30),
                 child: Form(
                   key: _formState,
                   autovalidateMode: AutovalidateMode.disabled,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-
                       TextFormField(
+
+                        style: TextStyle(fontSize: 25),
                         controller: nameControl..text = widget.beverageSnapshot.beverages.name,
                         decoration: InputDecoration(
+                            errorStyle: TextStyle(fontSize: 18),
                             labelText: 'Tên đồ uống',
+                            labelStyle: TextStyle(fontSize: 25),
+                            contentPadding: EdgeInsets.all(20),
                             border: OutlineInputBorder(
                                 borderRadius:BorderRadius.all(Radius.circular(10))
                             )
@@ -66,7 +79,7 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                         // onSaved: (newValue) {mh.tenMH=newValue;},
                         validator: (value) => value.isEmpty ? "Chưa có tên " : null,
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(height: 25,),
                       StreamBuilder(
                         stream: fireStoreCatagory.getCatagoryFromFireBase(),
                         builder: (context, snapshot){
@@ -75,7 +88,7 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                             return DropdownButtonFormField(
                               value: widget.beverageSnapshot.beverages.catagoryId,
                               items: data.map((catagorySnapshot) => DropdownMenuItem(
-                                child: Text(catagorySnapshot.catagoryDoc.name),
+                                child: Text(catagorySnapshot.catagoryDoc.name ,style: TextStyle(fontSize: 25),),
                                 value: catagorySnapshot.catagoryDoc.id,)
                               ).toList(),
                               onChanged: (value) {
@@ -87,6 +100,8 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                               validator: (value) => value ==null? "Chưa chọn loại mặt hàng" : null,
                               decoration: InputDecoration(
                                   labelText: 'Loại đồ uống',
+                                  labelStyle: TextStyle(fontSize: 25),
+                                  contentPadding: EdgeInsets.all(20),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(Radius.circular(10))
                                   )
@@ -95,12 +110,20 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                           return Center(child: CircularProgressIndicator(),);
                         },
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(height: 25,),
                       TextFormField(
-                        controller: priceControl..text = widget.beverageSnapshot.beverages.price.toString(),
+                        style: TextStyle(fontSize: 25),
+                        controller: priceControl..updateValue(widget.beverageSnapshot.beverages.price),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
+                            suffixText: 'VNĐ',
+                            suffixStyle: TextStyle(fontSize: 25, color: Colors.black45),
                             labelText: 'Giá',
+                            labelStyle: TextStyle(fontSize: 25),
+                            contentPadding: EdgeInsets.all(20),
                             border: OutlineInputBorder(
                                 borderRadius:BorderRadius.all(Radius.circular(10))
                             )
@@ -108,25 +131,29 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                         // onSaved: (newValue) {mh.soLuong= int.parse(newValue);},
                         validator: (value) => value.isEmpty ? "Chưa có Giá" : null,
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(height: 25,),
                       TextFormField(
+                        style: TextStyle(fontSize: 25),
                         controller: infoControl..text = widget.beverageSnapshot.beverages.description,
                         maxLines: null,
                         decoration: InputDecoration(
+                            errorStyle: TextStyle(fontSize: 18),
                             labelText: 'Thông tin',
+                            labelStyle: TextStyle(fontSize: 25),
+                            contentPadding: EdgeInsets.all(20),
                             border: OutlineInputBorder(
                                 borderRadius:BorderRadius.all(Radius.circular(10))
                             )
                         ),
                         validator: (value) => value.isEmpty ? "Chưa có thông tin" : null,
                       ),
-                      SizedBox(height: 15,),
+                      SizedBox(height: 25,),
                       Container(
                         padding: EdgeInsets.all(4),
                         child: picked
                             ? Container(
-                          width: 120,
-                          height: 120,
+                          width: 200,
+                          height: 200,
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: FileImage(_image),
@@ -139,8 +166,8 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                           strokeWidth: 3,
                           dashPattern: [8,4],
                           child: Container(
-                            width: 120,
-                            height: 120,
+                            width: 200,
+                            height: 200,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                     colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.dstATop),
@@ -148,19 +175,19 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                                     fit: BoxFit.cover)
                             ),
                             child: IconButton(
-                                icon: Icon(Icons.add_a_photo_outlined,color: Colors.blue,size: 40,),
+                                icon: Icon(Icons.add_a_photo_outlined,color: Colors.blue,size: 70,),
                                 onPressed: () =>
                                     chooseImage()
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(height: 25,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 35),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)
                             ),
@@ -168,7 +195,7 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('Cập nhập', style: TextStyle(fontSize: 15, color: Colors.white),)
+                                Text('Cập nhập', style: TextStyle(fontSize: 25, color: Colors.white),)
                               ],
                             ),
                             onPressed:() {
@@ -181,9 +208,6 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                                     added = false;
                                   });
                                   Navigator.of(context).pop();
-                                  nameControl.clear();
-                                  priceControl.clear();
-                                  infoControl.clear();
                                 });
                               }
                             },
@@ -202,11 +226,11 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
                       Container(
                         child: Text(
                           'Cập nhập...',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 30),
                         ),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                       CircularProgressIndicator()
                     ],
@@ -255,7 +279,7 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
         'catagoryId' : getCatagoryId(),
         'info': infoControl.text,
         'name': nameControl.text,
-        'price': int.parse(priceControl.text)
+        'price': priceControl.numberValue
       });
     }
     else{
@@ -269,7 +293,7 @@ class _EditBeveragesPageState extends State<EditBeveragesPage> {
             'image': value,
             'info': infoControl.text,
             'name': nameControl.text,
-            'price': int.parse(priceControl.text)
+            'price': priceControl.numberValue
           });
         });
       });

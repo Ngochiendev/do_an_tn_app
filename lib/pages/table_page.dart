@@ -10,6 +10,7 @@ import 'package:do_an_tn_app/pages/order_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 class TablePage extends StatefulWidget {
   static const String routeName = 'TablePage';
@@ -27,6 +28,7 @@ class _TablePageState extends State<TablePage> {
   bool _initialized = false;
   bool _error = false;
   bool _hadMessage = false;
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   _getToken(){
     _firebaseMessaging.getToken().then((deviceToken) {
@@ -37,8 +39,11 @@ class _TablePageState extends State<TablePage> {
     _firebaseMessaging.getInitialMessage().then((RemoteMessage message) {
       if(message != null){
         if(message.data['type'] == 'order'){
-          Navigator.pushNamed(context, OrderPage.routeName, arguments: {'tableNumber': message.data['tableNum'],
-            'orderID': message.data['orderID']}
+          Navigator.pushNamed(context, OrderPage.routeName,
+              arguments: {'tableNumber': message.data['tableNum'],
+                            'orderID': message.data['orderID'],
+                            'orderTime': intl.DateFormat('yyyy-MM-dd hh:mm:sss').parse(message.data['date'])
+                          }
           );
         }
         else if(message.data['type'] == 'checkout'){
@@ -62,8 +67,11 @@ class _TablePageState extends State<TablePage> {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // print('A new onMessageOpenedApp event was published: ${message}');
       if(message.data['type'] == 'order'){
-        Navigator.pushNamed(context, OrderPage.routeName, arguments: {'tableNumber': message.data['tableNum'],
-          'orderID': message.data['orderID']}
+        Navigator.pushNamed(context, OrderPage.routeName,
+            arguments: {'tableNumber': message.data['tableNum'],
+                        'orderID': message.data['orderID'],
+                        'orderTime': intl.DateFormat('yyyy-MM-dd hh:mm:sss').parse(message.data['date'])
+        }
         );
       }
       else{
@@ -136,13 +144,8 @@ class _TablePageState extends State<TablePage> {
             child: Scaffold(
                 appBar: AppBar(
                   actions: [
-                    // TextButton(
-                    //   child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 20),),
-                    //   onPressed: (){
-                    //     Navigator.pushNamed(context, MenuPage.routeName);
-                    //   },
-                    // )
                     PopupMenuButton(
+                      iconSize: 30,
                       onSelected: (result){
                         switch(result){
                           case 'menu':
@@ -157,11 +160,11 @@ class _TablePageState extends State<TablePage> {
                       itemBuilder: (context){
                         return <PopupMenuEntry<String>>[
                           PopupMenuItem(
-                            child: Text('Menu'),
+                            child: Text('Menu',style: TextStyle(fontSize: 20),),
                             value: 'menu',
                           ),
                           PopupMenuItem(
-                            child: Text('Nhân viên'),
+                            child: Text('Nhân viên',style: TextStyle(fontSize: 20),),
                             value: 'nv',
                           )
                         ];
@@ -170,32 +173,26 @@ class _TablePageState extends State<TablePage> {
                   ],
                   title: Center(
                     child: Text(titles[_selectedIndex],
-                      style: TextStyle(fontSize: 30, fontFamily: 'Berkshire Swash', fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 35, fontFamily: 'Berkshire Swash', fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  // actions: <Widget>[
-                  //   IconButton(icon: const Icon(
-                  //       Icons.agriculture_rounded, size: 30),
-                  //       onPressed: (){
-                  //         // var orderTime = DateTime.now();
-                  //         // String tableID = '0';
-                  //         // tableOrder.addOrderInTable(tableID, new Cart(), orderTime);
-                  //         // Navigator.pushNamed(context, MenuPage.routeName, arguments: {'tableNumber': 0, 'orderID': tableID+orderTime.toString()});
-                  //       })
-                  // ],
                 ),
                 body: getBody(),
                 floatingActionButton: Stack(
                   children: [
-                    FloatingActionButton(
-                      onPressed: (){
-                        Navigator.pushNamed(context, ChatPage.routeName);
-                        setState(() {
-                          _hadMessage = false;
-                        });
-                      },
-                      child:  Icon(Icons.message, color: Colors.white,),
+                    Container(
+                      width: 75,
+                      height: 75,
+                      child: FloatingActionButton(
+                        onPressed: (){
+                          Navigator.pushNamed(context, ChatPage.routeName);
+                          setState(() {
+                            _hadMessage = false;
+                          });
+                        },
+                        child:  Icon(Icons.message, color: Colors.white, size: 35,),
+                      ),
                     ),
                     _hadMessage == false ? Positioned(top: 0,right: 0,child: Container(),)
                         : Positioned(
@@ -203,13 +200,13 @@ class _TablePageState extends State<TablePage> {
                       right: 10,
                       child: Container(
                         alignment: Alignment.center,
-                        height: 15,
-                        width: 15,
+                        height: 25,
+                        width: 25,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.red
                         ),
-                        child: Text('N', style: TextStyle(fontSize: 12, color: Colors.white),),
+                        child: Text('N', style: TextStyle(fontSize: 18, color: Colors.white),),
                       ),
                     )
                   ],
@@ -217,13 +214,13 @@ class _TablePageState extends State<TablePage> {
                 bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Trang chính',
+                      icon: Icon(Icons.home, size: 36,),
+                      title: Text('Trang chính',style: TextStyle(fontSize: 25),)
                     ),
                     BottomNavigationBarItem(
                       icon: Stack(
                         children: [
-                          Icon(Icons.notifications_none_rounded, size: 30),
+                          Icon(Icons.notifications_none_rounded, size: 36),
                           StreamBuilder(
                             stream: notifications.getNotificationCount(),
                             builder: (context, snapshot){
@@ -241,13 +238,13 @@ class _TablePageState extends State<TablePage> {
                                     right: 0,
                                     child: Container(
                                       alignment: Alignment.center,
-                                      width: 15,
-                                      height: 15,
+                                      width: 19,
+                                      height: 19,
                                       decoration: BoxDecoration(
                                           color: Colors.red,
                                           borderRadius: BorderRadius.circular(12)
                                       ),
-                                      child: Text('${snapshot.data.docs.length}', style: TextStyle(fontSize: 12,color: Colors.white),),
+                                      child: Text('${snapshot.data.docs.length}', style: TextStyle(fontSize: 16,color: Colors.white),),
                                     ),
                                   );
                                 }
@@ -261,7 +258,7 @@ class _TablePageState extends State<TablePage> {
                           )
                         ],
                       ),
-                      label: 'Thông báo',
+                        title: Text('Thông báo',style: TextStyle(fontSize: 25),)
                     )
                   ],
                   currentIndex: _selectedIndex,

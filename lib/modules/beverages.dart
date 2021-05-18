@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 class Beverages{
   final String id;
   final String name;
-  final int price;
+  final double price;
   final String description;
   final String image;
   final String catagoryId;
@@ -20,7 +20,7 @@ class Beverages{
           id: json['id'],
           name: json['name'],
           catagoryId: json['catagoryId'],
-          price: json['price'],
+          price: double.parse(json['price'].toString()),
           description: json['info'],
           image: json['image']
       );

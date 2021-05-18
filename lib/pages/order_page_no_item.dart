@@ -14,7 +14,7 @@ class OrderPageNoItem extends StatelessWidget {
       child: Scaffold(
           appBar: AppBar(
             title: Text('Order',style: TextStyle(
-                fontSize: 30,
+                fontSize: 40,
                 fontFamily: 'Berkshire Swash',
                 fontWeight: FontWeight.bold),
             ),
@@ -31,7 +31,7 @@ class OrderPageNoItem extends StatelessWidget {
                         // ? 'Hóa đơn bàn: ${tableNumber}'
                         // : 'Hóa đơn mang về'
                         ,
-                        style: TextStyle(fontSize: 25,
+                        style: TextStyle(fontSize: 35,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Pacifico',
                             color: Colors.black)),
@@ -40,8 +40,8 @@ class OrderPageNoItem extends StatelessWidget {
                     height: 40,
                   ),
                   Container(
-                    width: 200,
-                    height: 200,
+                    width: 400,
+                    height: 400,
                     decoration: BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage('assets/images/no-item.png'),
@@ -57,7 +57,7 @@ class OrderPageNoItem extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20,),
-                  Text('Chưa có order nào', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold , color: Colors.black54),)
+                  Text('Chưa có order nào', style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold , color: Colors.black54),)
                 ],
               ),
             ],

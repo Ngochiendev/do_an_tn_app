@@ -4,21 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:transparent_image/transparent_image.dart';
 class OrderItem extends StatelessWidget {
-  // final String id;
-  // final String productId;
-  // final int quantity;
-  // final int price;
-  // final String name;
-  // final String desc;
-  final CartItem cartItem;
+  final Item item;
   OrderItem({
-    @required this.cartItem
-    // @required this.id,
-    // @required this.productId,
-    // @required this.quantity,
-    // @required this.price,
-    // @required this.name,
-    // @required this.desc
+    @required this.item
   });
   @override
   Widget build(BuildContext context) {
@@ -28,17 +16,17 @@ class OrderItem extends StatelessWidget {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Ghi chú'),
+            title: Text('Ghi chú',style: TextStyle(fontSize: 27),),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(cartItem.note),
+                  Text(item.note, style: TextStyle(fontSize: 22),),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Xác nhận'),
+                child: Text('Xác nhận',style: TextStyle(fontSize: 20),),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -65,8 +53,8 @@ class OrderItem extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              height: 50.0,
-              width: 50.0,
+              height: 70.0,
+              width: 70.0,
               decoration: BoxDecoration(
                   boxShadow:  [
                     BoxShadow(
@@ -79,40 +67,47 @@ class OrderItem extends StatelessWidget {
               child: FadeInImage.memoryNetwork(
                   fit: BoxFit.cover,
                   placeholder: kTransparentImage,
-                  image: cartItem.image
+                  image: item.image
               ),
             ),
-            SizedBox(width: 10,),
+            SizedBox(width: 20,),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(cartItem.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),),
+                  Text(item.name, style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),),
                   SizedBox(height: 5,),
                   Container(
-                    height: 20,
+                    height: 26,
                     child: ListView(
                       children: [
-                        Text('Ghi chú: ${cartItem.note}',style: TextStyle(fontSize: 15, color: Colors.black),)
+                        Text('Ghi chú: ${item.note}',style: TextStyle(fontSize: 19, color: Colors.black),)
                       ],
                     ),
                   )
                 ],
               ),
             ),
-            Text('Số lượng: ${cartItem.quantity} ', style: TextStyle(fontSize: 15, color: Colors.green),)
+            Text('Số lượng: ${item.quantity} ', style: TextStyle(fontSize: 19, color: Colors.green),)
           ],
         ),
       ),
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.2,
       secondaryActions: [
-        IconSlideAction(
-          caption: 'Xem ghi chú',
-          color: Colors.blue,
-          icon: Icons.announcement,
+        GestureDetector(
+          child: Container(
+            color: Colors.blue,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.announcement, size: 35, color: Colors.white,),
+                Text('Xem ghi chú', style: TextStyle(fontSize: 20, color: Colors.white),)
+              ],
+            ),
+          ),
           onTap: (){
-              _showDescription();
+            _showDescription();
           },
         ),
       ],

@@ -18,8 +18,9 @@ class MessageWidget extends StatelessWidget {
       children: [
         if(!isMe)
           CircleAvatar(
+            radius: 26,
             backgroundColor: Colors.grey.shade300,
-            child: Text(getInitials(message.sender), style: TextStyle(fontSize: 12, color: Colors.blue), ),
+            child: Text(getInitials(message.sender), style: TextStyle(fontSize: 18, color: Colors.blue), ),
           ),
         InkWell(
           onLongPress: (){
@@ -40,7 +41,7 @@ class MessageWidget extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.all(16),
             margin: EdgeInsets.all(16),
-            constraints: BoxConstraints(maxWidth: 140),
+            constraints: BoxConstraints(maxWidth: 180),
             decoration: BoxDecoration(
                 color: isMe ? Colors.blue.withOpacity(0.5) : Colors.black26,
                 borderRadius: isMe
@@ -58,7 +59,7 @@ class MessageWidget extends StatelessWidget {
     children: [
       Text(
         message.message,
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(color: Colors.black, fontSize: 20),
         textAlign: isMe ? TextAlign.end : TextAlign.start,
       )
     ],

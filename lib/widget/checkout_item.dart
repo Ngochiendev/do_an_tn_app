@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:transparent_image/transparent_image.dart';
 class CheckOutItem extends StatelessWidget {
-  final CartItem cartItem;
+  final Item item;
   CheckOutItem({
-    @required this.cartItem
+    @required this.item
   });
   @override
   Widget build(BuildContext context) {
@@ -25,8 +25,8 @@ class CheckOutItem extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            height: 50.0,
-            width: 50.0,
+            height: 70.0,
+            width: 70.0,
             decoration: BoxDecoration(
                 boxShadow:  [
                   BoxShadow(
@@ -39,21 +39,21 @@ class CheckOutItem extends StatelessWidget {
             child: FadeInImage.memoryNetwork(
                 fit: BoxFit.cover,
                 placeholder: kTransparentImage,
-                image: cartItem.image
+                image: item.image
             ),
           ),
-          SizedBox(width: 10,),
+          SizedBox(width: 20,),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(cartItem.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),),
-                SizedBox(height: 5,),
-                Text('Số lương: ${cartItem.quantity}',style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey),)
+                Text(item.name, style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),),
+                SizedBox(height: 10,),
+                Text('Số lương: ${item.quantity}',style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),)
               ],
             ),
           ),
-          Text('\$: ${NumberFormat('###,###','es_US').format(cartItem.quantity*cartItem.price)} VNĐ', style: TextStyle(fontSize: 15, color: Colors.green),)
+          Text('\$: ${NumberFormat('###,###','es_US').format(item.quantity*item.price)} VNĐ', style: TextStyle(fontSize: 20, color: Colors.green),)
         ],
       ),
     );

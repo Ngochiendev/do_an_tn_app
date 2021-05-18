@@ -19,8 +19,8 @@ class _EmployesPageState extends State<EmployesPage> {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Thêm nhân viên mới', textAlign: TextAlign.center,),
-            contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            title: Text('Thêm nhân viên mới', textAlign: TextAlign.center, style: TextStyle(fontSize: 29),),
+            contentPadding: EdgeInsets.all(25),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
@@ -31,13 +31,16 @@ class _EmployesPageState extends State<EmployesPage> {
                       children: [
                         SizedBox(height: 15,),
                         Container(
-                          width: 300,
+                          width: 500,
                           child: TextFormField(
+                            style: TextStyle(fontSize: 25),
                             controller: nameControl,
                             decoration: InputDecoration(
-
+                                errorStyle: TextStyle(fontSize: 16),
+                                labelStyle: TextStyle(fontSize: 25),
+                                contentPadding: EdgeInsets.all(20),
                                 labelText: 'Tên nhân viên(không dấu)',
-                                prefixIcon: Icon(Icons.perm_identity_outlined),
+                                prefixIcon: Icon(Icons.perm_identity_outlined,size: 30,),
                                 border: OutlineInputBorder(
                                     borderRadius:BorderRadius.all(Radius.circular(20))
                                 )
@@ -48,10 +51,14 @@ class _EmployesPageState extends State<EmployesPage> {
                         ),
                         SizedBox(height: 20,),
                         TextFormField(
+                          style: TextStyle(fontSize: 25),
                           controller: passControl,
                           decoration: InputDecoration(
+                              errorStyle: TextStyle(fontSize: 16),
                               labelText: 'Mật khẩu',
-                              prefixIcon: Icon(Icons.lock_open),
+                              labelStyle: TextStyle(fontSize: 25),
+                              contentPadding: EdgeInsets.all(20),
+                              prefixIcon: Icon(Icons.lock_open, size: 30,),
                               border: OutlineInputBorder(
                                   borderRadius:BorderRadius.all(Radius.circular(20))
                               )
@@ -61,10 +68,14 @@ class _EmployesPageState extends State<EmployesPage> {
                         ),
                         SizedBox(height: 20,),
                         TextFormField(
+                          style: TextStyle(fontSize: 25),
                           controller: comfirmPassControl,
                           decoration: InputDecoration(
+                              errorStyle: TextStyle(fontSize: 16),
                               labelText: 'Xác nhận mật khẩu',
-                              prefixIcon: Icon(Icons.admin_panel_settings_outlined),
+                              labelStyle: TextStyle(fontSize: 25),
+                              contentPadding: EdgeInsets.all(20),
+                              prefixIcon: Icon(Icons.admin_panel_settings_outlined,size: 30,),
                               border: OutlineInputBorder(
                                   borderRadius:BorderRadius.all(Radius.circular(20))
                               )
@@ -92,7 +103,7 @@ class _EmployesPageState extends State<EmployesPage> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Xác nhận', style: TextStyle(color: Colors.red, fontSize: 20),),
+                child: Text('Xác nhận', style: TextStyle(color: Colors.red, fontSize: 29),),
                 onPressed: () {
                   if(_formState.currentState.validate()){
                     FirebaseFirestore.instance.collection('employes').add({
@@ -108,7 +119,7 @@ class _EmployesPageState extends State<EmployesPage> {
                 },
               ),
               TextButton(
-                child: Text('Hủy', style: TextStyle(color: Colors.grey, fontSize: 20),),
+                child: Text('Hủy', style: TextStyle(color: Colors.grey, fontSize: 29),),
                 onPressed: () {
                   Navigator.of(context).pop();
                   nameControl.clear();
@@ -125,7 +136,7 @@ class _EmployesPageState extends State<EmployesPage> {
       child: Scaffold(
           appBar: AppBar(
             title: Text('Nhân viên',style: TextStyle(
-                fontSize: 30,
+                fontSize: 40,
                 fontFamily: 'Berkshire Swash',
                 fontWeight: FontWeight.bold)
             ),
@@ -137,14 +148,14 @@ class _EmployesPageState extends State<EmployesPage> {
               if(snapshot.hasData){
                 return ListView(
                   children: [
-                    SizedBox(height: 10,),
+                    SizedBox(height: 20,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(width: 10,),
+                        SizedBox(width: 20,),
                         RaisedButton(
-                          child: Text('+ Thêm nhân viên mới', style: TextStyle(color: Colors.white, fontSize: 15),),
-                          padding: EdgeInsets.all(10),
+                          child: Text('+ Thêm nhân viên mới', style: TextStyle(color: Colors.white, fontSize: 25),),
+                          padding: EdgeInsets.all(15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)
                           ),
@@ -156,15 +167,17 @@ class _EmployesPageState extends State<EmployesPage> {
 
                       ],
                     ),
+                    SizedBox(height: 30,),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
-                          dataRowHeight: 70,
+                          columnSpacing: 120,
+                          dataRowHeight: 120,
                           columns: [
-                            DataColumn(label: Text('Nhân viên', style: TextStyle(fontSize: 16),)),
-                            DataColumn(label: Text('ID', style: TextStyle(fontSize: 16),)),
-                            DataColumn(label: Text('Password', style: TextStyle(fontSize: 16),)),
-                            DataColumn(label: Text('Xoá', style: TextStyle(fontSize: 16),)),
+                            DataColumn(label: Text('Nhân viên', style: TextStyle(fontSize: 30),)),
+                            DataColumn(label: Text('ID', style: TextStyle(fontSize: 30),)),
+                            DataColumn(label: Text('Password', style: TextStyle(fontSize: 30),)),
+                            DataColumn(label: Text('Xoá', style: TextStyle(fontSize: 30),)),
                           ],
                           rows: _buildList(context, snapshot.data)
                       ),
@@ -185,12 +198,12 @@ class _EmployesPageState extends State<EmployesPage> {
   DataRow _buildRow(BuildContext context, DocumentSnapshot employeeSnapshot){
     return DataRow(
         cells: [
-          DataCell(Text(employeeSnapshot.data()['name'], style: TextStyle(fontSize: 14),)),
-          DataCell(Text(employeeSnapshot.data()['id'], style: TextStyle(fontSize: 14),)),
-          DataCell(Text(employeeSnapshot.data()['pass'], style: TextStyle(fontSize: 14),)),
+          DataCell(Text(employeeSnapshot.data()['name'], style: TextStyle(fontSize: 28),)),
+          DataCell(Text(employeeSnapshot.data()['id'], style: TextStyle(fontSize: 28),)),
+          DataCell(Text(employeeSnapshot.data()['pass'], style: TextStyle(fontSize: 28),)),
           DataCell(
               IconButton(
-                icon: Icon(Icons.cancel, color: Colors.red,),
+                icon: Icon(Icons.cancel, color: Colors.red,size: 40,),
                 onPressed: (){
                   _showDeleteAlert(employeeSnapshot,context);
                 },
@@ -207,12 +220,12 @@ class _EmployesPageState extends State<EmployesPage> {
         return AlertDialog(
           title: Column(
             children: [
-              Icon(Icons.warning_amber_outlined, color: Colors.amberAccent,size: 60,),
+              Icon(Icons.warning_amber_outlined, color: Colors.amberAccent,size: 80,),
               Text('Bạn có chắc muốn xóa nhân viên',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 21,
+                  fontSize: 30,
                 ),),
             ],
           ),
@@ -220,40 +233,40 @@ class _EmployesPageState extends State<EmployesPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                SizedBox(height: 15,),
+                SizedBox(height: 20,),
                 Row(
                   children: [
-                    SizedBox(width: 20,),
-                    Text('Tên: ', style: TextStyle(fontSize: 16)),
-                    SizedBox(width: 10,),
+                    SizedBox(width: 29,),
+                    Text('Tên: ', style: TextStyle(fontSize: 29)),
+                    SizedBox(width: 15,),
                     Text(doc.data()['name'],
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 29))
                   ],
                 ),
-                SizedBox(height: 10,),
+                SizedBox(height: 20,),
                 Row(
                   children: [
                     SizedBox(width: 20,),
-                    Text('MSNV: ', style: TextStyle(fontSize: 16)),
+                    Text('MSNV: ', style: TextStyle(fontSize: 29)),
                     SizedBox(width: 10,),
                     Text(doc.data()['id'],
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 29))
                   ],
                 ),
-                SizedBox(height: 18,),
+                SizedBox(height: 26,),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Xác nhận', style: TextStyle(color: Colors.red, fontSize: 20),),
+              child: Text('Xác nhận', style: TextStyle(color: Colors.red, fontSize: 29),),
               onPressed: () {
                 Navigator.of(context).pop();
                 doc.reference.delete();
               },
             ),
             TextButton(
-              child: Text('Hủy', style: TextStyle(color: Colors.grey, fontSize: 20),),
+              child: Text('Hủy', style: TextStyle(color: Colors.grey, fontSize: 29),),
               onPressed: () {
                 Navigator.of(context).pop();
               },

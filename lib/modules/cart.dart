@@ -1,66 +1,69 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-class Carts{
+class WaitersOrder{
   final String waiterID;
   final String waiterName;
   final Timestamp time;
   final bool check;
-  const Carts({
+  const WaitersOrder({
     @required this.waiterID,
     @required this.waiterName,
     @required this.time,
     @required this.check
 });
-  factory Carts.fromJson(Map<String, dynamic> json) =>
-      Carts(
+  factory WaitersOrder.fromJson(Map<String, dynamic> json) =>
+      WaitersOrder(
           waiterID: json['waiterID'],
           waiterName: json['waiterName'],
           time: json['time'],
           check: json['check']
       );
 }
-class CartsSnapshot{
-  Carts carts;
+class WaitersOrderSnapshot{
+  WaitersOrder waitersOrder;
   DocumentReference docs;
-  CartsSnapshot({this.carts, this.docs});
+  WaitersOrderSnapshot({this.waitersOrder, this.docs});
 
-  CartsSnapshot.fromSnapshot(DocumentSnapshot snapshot):
-      carts = Carts.fromJson(snapshot.data()),
+  WaitersOrderSnapshot.fromSnapshot(DocumentSnapshot snapshot):
+      waitersOrder = WaitersOrder.fromJson(snapshot.data()),
       docs = snapshot.reference;
 }
 
-class CartItem {
+class Item {
   final String id;
   final int quantity;
   final String name;
-  final int price;
+  final double price;
   final String note;
   final String image;
+  final bool check;
 
-  const CartItem({
+  const Item({
     @required this.id,
     @required this.price,
     @required this.name,
     @required this.image,
+    @required this.check,
     this.note,
-    this.quantity,
+    @required this.quantity,
   });
-  factory CartItem.fromJson(Map<String, dynamic> json) =>
-      CartItem(
+  factory Item.fromJson(Map<String, dynamic> json) =>
+      Item(
           id: json['id'],
-          price: json['price'],
+          price: double.parse(json['price'].toString()),
           name: json['name'],
           note: json['note'],
           quantity: json['quantity'],
-          image: json['image']
+          image: json['image'],
+          check: json['check']
       );
 }
-class CartItemSnapshot{
-  CartItem cartItem;
+class ItemSnapshot{
+  Item item;
   DocumentReference doc;
-  CartItemSnapshot({this.cartItem, this.doc});
+  ItemSnapshot({this.item, this.doc});
 
-  CartItemSnapshot.fromSnapshot(DocumentSnapshot snapshot):
-        cartItem = CartItem.fromJson(snapshot.data()),
+  ItemSnapshot.fromSnapshot(DocumentSnapshot snapshot):
+        item = Item.fromJson(snapshot.data()),
         doc = snapshot.reference;
 }

@@ -5,6 +5,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:do_an_tn_app/datas/data.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart' as Path;
@@ -28,7 +30,11 @@ class _AddBeveragesState extends State<AddBeverages> {
   bool added = false;
   bool picked = false;
   TextEditingController nameControl = TextEditingController();
-  TextEditingController priceControl = TextEditingController();
+  MoneyMaskedTextController priceControl = MoneyMaskedTextController(
+      decimalSeparator: '',
+      thousandSeparator: ',',
+      precision: 0,
+  );
   TextEditingController infoControl = TextEditingController();
   TextEditingController catagoryNameControl = TextEditingController();
   TextEditingController catagoryIDControl = TextEditingController();
@@ -41,8 +47,8 @@ class _AddBeveragesState extends State<AddBeverages> {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Nhập danh mục đồ uống cần thêm', textAlign: TextAlign.center,),
-            contentPadding: EdgeInsets.all(5),
+            title: Text('Nhập danh mục đồ uống cần thêm', textAlign: TextAlign.center, style: TextStyle(fontSize: 25),),
+            contentPadding: EdgeInsets.all(15),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
@@ -53,9 +59,12 @@ class _AddBeveragesState extends State<AddBeverages> {
                       children: [
                         SizedBox(height: 15,),
                         TextFormField(
+                          style: TextStyle(fontSize: 25),
                           controller: catagoryIDControl,
                           decoration: InputDecoration(
+                              errorStyle: TextStyle(fontSize: 16),
                               labelText: 'ID danh mục',
+                              labelStyle: TextStyle(fontSize: 25),
                               border: OutlineInputBorder(
                                   borderRadius:BorderRadius.all(Radius.circular(20))
                               )
@@ -65,8 +74,11 @@ class _AddBeveragesState extends State<AddBeverages> {
                         ),
                         SizedBox(height: 20,),
                         TextFormField(
+                          style: TextStyle(fontSize: 25),
                           controller: catagoryNameControl,
                           decoration: InputDecoration(
+                              labelStyle: TextStyle(fontSize: 25),
+                              errorStyle: TextStyle(fontSize: 16),
                               labelText: 'Tên danh mục',
                               border: OutlineInputBorder(
                                   borderRadius:BorderRadius.all(Radius.circular(20))
@@ -83,7 +95,7 @@ class _AddBeveragesState extends State<AddBeverages> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Xác nhận', style: TextStyle(color: Colors.red, fontSize: 20),),
+                child: Text('Xác nhận', style: TextStyle(color: Colors.red, fontSize: 28),),
                 onPressed: () {
                   if(_formCatagoryState.currentState.validate()){
                     fireStoreCatagory.addCatagory(catagoryNameControl.text.trim(), catagoryIDControl.text.trim());
@@ -92,7 +104,7 @@ class _AddBeveragesState extends State<AddBeverages> {
                 },
               ),
               TextButton(
-                child: Text('Hủy', style: TextStyle(color: Colors.grey, fontSize: 20),),
+                child: Text('Hủy', style: TextStyle(color: Colors.grey, fontSize: 28),),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -106,13 +118,15 @@ class _AddBeveragesState extends State<AddBeverages> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Thêm đồ uống'),
+          title: Text('Thêm đồ uống',style: TextStyle(fontSize: 40,
+              fontFamily: 'Berkshire Swash',
+              fontWeight: FontWeight.bold),),
         ),
         body: SingleChildScrollView(
           child: Stack(
             children: [
               Container(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(10).copyWith(top: 30),
                 child: Form(
                   key: _formBeverageState,
                   autovalidateMode: AutovalidateMode.disabled,
@@ -122,8 +136,14 @@ class _AddBeveragesState extends State<AddBeverages> {
 
                       TextFormField(
                         controller: nameControl,
+                        style: TextStyle(
+                          fontSize: 25
+                        ),
                         decoration: InputDecoration(
+                            errorStyle: TextStyle(fontSize: 18),
+                            contentPadding: EdgeInsets.all(20),
                             labelText: 'Tên đồ uống',
+                            labelStyle: TextStyle(fontSize: 25),
                             border: OutlineInputBorder(
                                 borderRadius:BorderRadius.all(Radius.circular(10))
                             )
@@ -131,7 +151,7 @@ class _AddBeveragesState extends State<AddBeverages> {
                         // onSaved: (newValue) {mh.tenMH=newValue;},
                         validator: (value) => value.isEmpty ? "Chưa có tên " : null,
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(height: 20,),
                       StreamBuilder(
                         stream: fireStoreCatagory.getCatagoryFromFireBase(),
                         builder: (context, snapshot){
@@ -139,7 +159,7 @@ class _AddBeveragesState extends State<AddBeverages> {
                             List data = snapshot.data;
                             return DropdownButtonFormField(
                               items: data.map((catagorySnapshot) => DropdownMenuItem(
-                                child: Text(catagorySnapshot.catagoryDoc.name),
+                                child: Text(catagorySnapshot.catagoryDoc.name, style: TextStyle(fontSize: 25),),
                                 value: catagorySnapshot.catagoryDoc.id,)
                               ).toList(),
                               onChanged: (value) {
@@ -150,7 +170,10 @@ class _AddBeveragesState extends State<AddBeverages> {
                               isExpanded: false,
                               validator: (value) => value ==null? "Chưa chọn loại mặt hàng" : null,
                               decoration: InputDecoration(
+                                  errorStyle: TextStyle(fontSize: 18),
+                                  contentPadding: EdgeInsets.all(20),
                                   labelText: 'Loại đồ uống',
+                                  labelStyle: TextStyle(fontSize: 25),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(Radius.circular(10))
                                   )
@@ -159,13 +182,13 @@ class _AddBeveragesState extends State<AddBeverages> {
                           return Center(child: CircularProgressIndicator(),);
                         },
                       ),
-                      SizedBox(height: 5,),
+                      SizedBox(height: 10,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           RaisedButton(
-                            child: Text('+ Thêm danh mục đồ uống',style: TextStyle(color: Colors.white, fontSize: 15),),
-                            padding: EdgeInsets.all(10),
+                            child: Text('+ Thêm danh mục đồ uống',style: TextStyle(color: Colors.white, fontSize: 20),),
+                            padding: EdgeInsets.all(12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25)
                             ),
@@ -178,10 +201,18 @@ class _AddBeveragesState extends State<AddBeverages> {
                       ),
                       SizedBox(height: 10,),
                       TextFormField(
+                        style: TextStyle(fontSize: 25),
                         controller: priceControl,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
+                            suffixText: 'VNĐ',
+                            suffixStyle: TextStyle(fontSize: 25, color: Colors.black45),
                             labelText: 'Giá',
+                            contentPadding: EdgeInsets.all(20),
+                            labelStyle: TextStyle(fontSize: 25),
                             border: OutlineInputBorder(
                                 borderRadius:BorderRadius.all(Radius.circular(10))
                             )
@@ -189,24 +220,28 @@ class _AddBeveragesState extends State<AddBeverages> {
                         // onSaved: (newValue) {mh.soLuong= int.parse(newValue);},
                         validator: (value) => value.isEmpty ? "Chưa có Giá" : null,
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(height: 20,),
                       TextFormField(
                         controller: infoControl,
+                        style: TextStyle(fontSize: 25),
                         decoration: InputDecoration(
+                            errorStyle: TextStyle(fontSize: 18),
                             labelText: 'Thông tin',
+                            contentPadding: EdgeInsets.all(20),
+                            labelStyle: TextStyle(fontSize: 25),
                             border: OutlineInputBorder(
                                 borderRadius:BorderRadius.all(Radius.circular(10))
                             )
                         ),
                         validator: (value) => value.isEmpty ? "Chưa có thông tin" : null,
                       ),
-                      SizedBox(height: 15,),
+                      SizedBox(height: 25,),
                       Container(
-                        padding: EdgeInsets.all(4),
+                        padding: EdgeInsets.all(8),
                         child: picked
                             ? Container(
-                          width: 120,
-                          height: 120,
+                          width: 180,
+                          height: 180,
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: FileImage(_image),
@@ -218,13 +253,13 @@ class _AddBeveragesState extends State<AddBeverages> {
                               strokeWidth: 3,
                               dashPattern: [8,4],
                               child: Container(
-                                width: 120,
-                                height: 120,
+                                width: 180,
+                                height: 180,
                                 decoration: BoxDecoration(
                                     color: Colors.grey
                                 ),
                                 child: IconButton(
-                                    icon: Icon(Icons.add_a_photo_outlined,size: 40,),
+                                    icon: Icon(Icons.add_a_photo_outlined,size: 70,),
                                     onPressed: () =>
                                         chooseImage()
                                 ),
@@ -237,7 +272,7 @@ class _AddBeveragesState extends State<AddBeverages> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 35),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)
                             ),
@@ -245,7 +280,7 @@ class _AddBeveragesState extends State<AddBeverages> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('Thêm sản phẩm', style: TextStyle(fontSize: 15, color: Colors.white),)
+                                Text('Thêm sản phẩm', style: TextStyle(fontSize: 25, color: Colors.white),)
                               ],
                             ),
                             onPressed:() {
@@ -259,7 +294,7 @@ class _AddBeveragesState extends State<AddBeverages> {
                                   });
                                   Navigator.of(context).pop();
                                   nameControl.clear();
-                                  priceControl.clear();
+                                  priceControl.updateValue(0);
                                   infoControl.clear();
                                 });
                               }
@@ -279,11 +314,11 @@ class _AddBeveragesState extends State<AddBeverages> {
                       Container(
                         child: Text(
                           'Đang thêm...',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 30),
                         ),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                       CircularProgressIndicator()
                     ],
@@ -327,7 +362,7 @@ class _AddBeveragesState extends State<AddBeverages> {
         'image': 'https://firebasestorage.googleapis.com/v0/b/cafeorderapp-a7803.appspot.com/o/images%2Fno_image.jpg?alt=media&token=9e9552d4-bbd0-4caf-bc60-8e956b97db14',
         'info': infoControl.text.trim(),
         'name': nameControl.text.trim(),
-        'price': int.parse(priceControl.text)
+        'price': priceControl.numberValue
       });
     }
     else{
@@ -342,7 +377,7 @@ class _AddBeveragesState extends State<AddBeverages> {
             'image': value,
             'info': infoControl.text,
             'name': nameControl.text,
-            'price': int.parse(priceControl.text)
+            'price': priceControl.numberValue
           });
         });
       });

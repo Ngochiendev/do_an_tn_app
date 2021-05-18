@@ -6,58 +6,62 @@ import 'package:do_an_tn_app/modules/catogories.dart';
 import 'package:do_an_tn_app/modules/notifications.dart';
 import 'package:do_an_tn_app/modules/order.dart';
 
-class FireStoreDatabaseTables{
-  Stream<List<CartsSnapshot>> getCartsFromFirebase(String tableNum, String orderID){
+class FireStoreDatabaseOrders{
+  Stream<List<WaitersOrderSnapshot>> getWaitersFromFirebase(String orderID){
     Stream<QuerySnapshot> stream =
     FirebaseFirestore
-        .instance.collection('tables').doc(tableNum)
-        .collection('orders').doc(orderID)
-        .collection('carts')
+        .instance.collection('orders').doc(orderID)
+        .collection('waitersOrder')
         .where('check', isEqualTo: false)
         .snapshots();
 
     return stream.map((QuerySnapshot querySnapshot) =>
         querySnapshot.docs.map((DocumentSnapshot docs) =>
-            CartsSnapshot.fromSnapshot(docs)
-        ).toList()
-    );
-  }
-  Stream<List<CartItemSnapshot>> getCartsItemFromFirebase(CartsSnapshot cartsSnapshot){
-    Stream<QuerySnapshot> stream = cartsSnapshot.docs.collection('cartItem').snapshots();
-
-    return stream.map((QuerySnapshot querySnapshot) =>
-        querySnapshot.docs.map((DocumentSnapshot docs) =>
-          CartItemSnapshot.fromSnapshot(docs)
+            WaitersOrderSnapshot.fromSnapshot(docs)
         ).toList()
     );
   }
 
-  Stream<List<CartItemSnapshot>> getItemsFromFirebase(String tableNum, String orderID){
-    Stream<QuerySnapshot> stream =
-    FirebaseFirestore
-        .instance.collection('tables').doc(tableNum)
+  Stream<List<ItemSnapshot>> getItemOrderFromFirebase(String orderID){
+    Stream<QuerySnapshot> stream = 
+    FirebaseFirestore.instance
         .collection('orders').doc(orderID)
         .collection('items')
-        .orderBy('id', descending: true)
+        .where('check', isEqualTo: false)
         .snapshots();
+
     return stream.map((QuerySnapshot querySnapshot) =>
         querySnapshot.docs.map((DocumentSnapshot docs) =>
-            CartItemSnapshot.fromSnapshot(docs)
+          ItemSnapshot.fromSnapshot(docs)
         ).toList()
     );
   }
-  Future<OrderSnapshot> getOrderDataFromFireBase(String orderID, String tableNum){
-    return FirebaseFirestore.instance
-        .collection('tables').doc(tableNum)
+
+  Stream<List<ItemSnapshot>> getItemCheckOutFromFirebase(String orderID){
+    Stream<QuerySnapshot> stream =
+    FirebaseFirestore.instance
         .collection('orders').doc(orderID)
-        .get()
-        .then((DocumentSnapshot snapshot) => OrderSnapshot.fromSnapshot(snapshot));
+        .collection('items')
+        .where('check', isEqualTo: true)
+        .snapshots();
+
+    return stream.map((QuerySnapshot querySnapshot) =>
+        querySnapshot.docs.map((DocumentSnapshot docs) =>
+            ItemSnapshot.fromSnapshot(docs)
+        ).toList()
+    );
   }
-  Stream<List<OrderSnapshot>> getAllOrderFromFireBase(String tableNum){
+
+  Stream<OrderSnapshot> getOrderDataFromFireBase(String orderID){
+    Stream<DocumentSnapshot> stream = FirebaseFirestore.instance
+        .collection('orders').doc(orderID).snapshots();
+    return stream.map((DocumentSnapshot doc) => OrderSnapshot.fromSnapshot(doc));
+        // .get()
+        // .then((DocumentSnapshot snapshot) => OrderSnapshot.fromSnapshot(snapshot));
+  }
+  Stream<List<OrderSnapshot>> getAllOrderFromFireBase(){
     Stream<QuerySnapshot> stream = FirebaseFirestore.instance
-        .collection('tables').doc(tableNum)
-        .collection('orders').orderBy('date',descending: true)
-        .limit(1)
+        .collection('orders').where('checkout', isEqualTo: false)
         .snapshots();
     return stream.map((QuerySnapshot querySnapshot) =>
         querySnapshot.docs.map((DocumentSnapshot doc) =>
@@ -66,29 +70,29 @@ class FireStoreDatabaseTables{
     );
     // return querySnapshot.docs.map((DocumentSnapshot doc) => OrderSnapshot.fromSnapshot(doc)).last
   }
-  Future<void> comfirmCheckOut(String orderID, String tableNum) async{
-    return await FirebaseFirestore.instance.collection('tables').doc(tableNum).collection('orders').doc(orderID)
+  Future<void> comfirmCheckOut(String orderID) async{
+    return await FirebaseFirestore.instance.collection('orders').doc(orderID)
         .update({
       'checkout': true,
     });
   }
-  Future<void> comfirmOrder(String orderID, List<CartItem> carts,
-      String tableNum, int total) async{
-    final order =  FirebaseFirestore.instance.collection('tables').doc(tableNum).collection('orders').doc(orderID);
+  Future<void> comfirmOrder(String orderID, double total) async{
+    final order =  FirebaseFirestore.instance.collection('orders').doc(orderID);
     order.update({
       'total': FieldValue.increment(total),
       'received': true,
     });
-    carts.forEach((item) async{
-      await order.collection('items').add({
-        'id': item.id,
-        'name': item.name,
-        'quantity': item.quantity,
-        'note': item.note,
-        'price': item.price,
-        'image': item.image
-      });
-    });
+
+    // carts.forEach((item) async{
+    //   await order.collection('items').add({
+    //     'id': item.id,
+    //     'name': item.name,
+    //     'quantity': item.quantity,
+    //     'note': item.note,
+    //     'price': item.price,
+    //     'image': item.image
+    //   });
+    // });
   }
 }
 class FireStoreDataNotification{

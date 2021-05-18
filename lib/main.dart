@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<FireStoreDatabaseTables>(create: (context) => FireStoreDatabaseTables()),
+        Provider<FireStoreDatabaseOrders>(create: (context) => FireStoreDatabaseOrders()),
         Provider<FireStoreDataNotification>(create: (context) => FireStoreDataNotification()),
         Provider<FireStoreDatabaseMessage>(create: (context) => FireStoreDatabaseMessage()),
         Provider<FireStoreDatabaseCatagory>(create: (context) => FireStoreDatabaseCatagory()),

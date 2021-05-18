@@ -36,7 +36,7 @@ class _NotificationPageState extends State<NotificationPage> {
             if(snapshot.hasData){
               if(snapshot.data.length==0){
                 return Center(
-                  child: Text('Chưa có thông báo nào',style: TextStyle(fontSize: 25),),
+                  child: Text('Chưa có thông báo nào',style: TextStyle(fontSize: 30),),
                 );
               }
               else{
@@ -49,7 +49,11 @@ class _NotificationPageState extends State<NotificationPage> {
                       return InkWell(
                         onTap: (){
                           if(notify.type=='order'){
-                            Navigator.pushNamed(context, OrderPage.routeName, arguments: {'tableNumber': notify.tableNum,'orderID': notify.orderID},);
+                            Navigator.pushNamed(context, OrderPage.routeName,
+                              arguments: {
+                              'tableNumber': notify.tableNum,
+                                'orderID': notify.orderID,
+                              },);
                             snapshot.data[index].docs.delete();
                           }
                           else{
