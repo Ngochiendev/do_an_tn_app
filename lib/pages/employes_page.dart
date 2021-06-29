@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:do_an_tn_app/widget/table_assign_checkbox.dart';
 import 'package:flutter/material.dart';
 class EmployesPage extends StatefulWidget {
   static const String routeName = 'EmployesPage';
@@ -109,7 +110,8 @@ class _EmployesPageState extends State<EmployesPage> {
                     FirebaseFirestore.instance.collection('employes').add({
                       'name': nameControl.text,
                       'pass': passControl.text,
-                      'id': (snapshot.docs.length+1).toString().padLeft(3,'0')
+                      'id': (snapshot.docs.length+1).toString().padLeft(3,'0'),
+                      'tableAssign': []
                     });
                     Navigator.of(context).pop();
                     nameControl.clear();
@@ -177,6 +179,7 @@ class _EmployesPageState extends State<EmployesPage> {
                             DataColumn(label: Text('Nhân viên', style: TextStyle(fontSize: 30),)),
                             DataColumn(label: Text('ID', style: TextStyle(fontSize: 30),)),
                             DataColumn(label: Text('Password', style: TextStyle(fontSize: 30),)),
+                            DataColumn(label: Text('Bàn phụ trách', style: TextStyle(fontSize: 30),)),
                             DataColumn(label: Text('Xoá', style: TextStyle(fontSize: 30),)),
                           ],
                           rows: _buildList(context, snapshot.data)
@@ -196,11 +199,36 @@ class _EmployesPageState extends State<EmployesPage> {
     return snapshot.docs.map((DocumentSnapshot  doc) => _buildRow(context, doc)).toList();
   }
   DataRow _buildRow(BuildContext context, DocumentSnapshot employeeSnapshot){
+    var _listTableAssign = employeeSnapshot.data()['tableAssign'];
+    _listTableAssign.sort((a,b) => int.parse(a).compareTo(int.parse(b)));
     return DataRow(
         cells: [
           DataCell(Text(employeeSnapshot.data()['name'], style: TextStyle(fontSize: 28),)),
           DataCell(Text(employeeSnapshot.data()['id'], style: TextStyle(fontSize: 28),)),
           DataCell(Text(employeeSnapshot.data()['pass'], style: TextStyle(fontSize: 28),)),
+          DataCell(
+              InkWell(
+               child: Container(
+                 height: double.infinity,
+                 width: double.infinity,
+                 child: Row(
+                   children: [
+                     Icon(Icons.edit, size: 30, color: Colors.black26,),
+                     SizedBox(width: 5,),
+                     Text(
+                          _listTableAssign.length > 0
+                              ?  _listTableAssign.join(', ')
+                              : 'Chưa chỉ định',
+                          style: TextStyle(fontSize: 28)
+                     ),
+                   ],
+                 ),
+               ),
+               onTap: () {
+                  _showEditAssignTable(employeeSnapshot,employeeSnapshot.data()['tableAssign'],context);
+               },
+              )
+          ),
           DataCell(
               IconButton(
                 icon: Icon(Icons.cancel, color: Colors.red,size: 40,),
@@ -263,6 +291,117 @@ class _EmployesPageState extends State<EmployesPage> {
               onPressed: () {
                 Navigator.of(context).pop();
                 doc.reference.delete();
+              },
+            ),
+            TextButton(
+              child: Text('Hủy', style: TextStyle(color: Colors.grey, fontSize: 29),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Future<void> _showEditAssignTable(DocumentSnapshot doc,List<dynamic> tablesAssign, BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Container(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(width: 2, color: Colors.black45))
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.app_registration , color: Colors.black26,size: 50,),
+                SizedBox(width: 10,),
+                Text('Chọn Bàn Cho Nhân Viên Phụ Trách',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),),
+              ],
+            ),
+          ),
+          contentPadding: EdgeInsets.all(15),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                SizedBox(height: 20,),
+                Row(
+                  children: [
+                    SizedBox(width: 20,),
+                    Text('Tên nhân viên: ', style: TextStyle(fontSize: 29)),
+                    SizedBox(width: 10,),
+                    Text(doc.data()['name'],
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 29))
+                  ],
+                ),
+                SizedBox(height: 20,),
+                Row(
+                  children: [
+                    SizedBox(width: 20,),
+                    Text('MSNV: ', style: TextStyle(fontSize: 29)),
+                    SizedBox(width: 10,),
+                    Text(doc.data()['id'],
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 29))
+                  ],
+                ),
+                SizedBox(height: 26,),
+                Container(
+                  width: 300,
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection('tablesCount').doc('CountTablesInCafe').snapshots(),
+                    builder: (context, countTables){
+                      if(countTables.hasData){
+                        int count = int.parse(countTables.data.data()['count'].toString());
+                        return GridView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          padding: const EdgeInsets.all(20),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          childAspectRatio: 8/5,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          ),
+                          itemCount: count,
+                          itemBuilder: (context, index){
+                            return TableAssignCheckBox(
+                                tableNum: index+1,
+                                check: tablesAssign.contains((index+1).toString()),
+                                callBack: (assign){
+                                  if(assign){
+                                    tablesAssign.add((index+1).toString());
+                                  }
+                                  else{
+                                    tablesAssign.remove((index+1).toString());
+                                  }
+                                }
+                            );
+                          }
+                        );
+                      }
+                      return Center(child: CircularProgressIndicator(),);
+                    },
+                  )
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Xác nhận', style: TextStyle(color: Colors.red, fontSize: 29),),
+              onPressed: () {
+                doc.reference.update({
+                  'tableAssign': tablesAssign
+                });
+                Navigator.of(context).pop();
               },
             ),
             TextButton(

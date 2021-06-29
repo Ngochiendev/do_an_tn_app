@@ -12,7 +12,6 @@ class FireStoreDatabaseOrders{
     FirebaseFirestore
         .instance.collection('orders').doc(orderID)
         .collection('waitersOrder')
-        .where('check', isEqualTo: false)
         .snapshots();
 
     return stream.map((QuerySnapshot querySnapshot) =>
@@ -76,11 +75,12 @@ class FireStoreDatabaseOrders{
       'checkout': true,
     });
   }
-  Future<void> comfirmOrder(String orderID, double total) async{
+  Future<void> comfirmOrder(String orderID, double total, DateTime receivedTime) async{
     final order =  FirebaseFirestore.instance.collection('orders').doc(orderID);
     order.update({
       'total': FieldValue.increment(total),
       'received': true,
+      'receivedTime': receivedTime
     });
 
     // carts.forEach((item) async{

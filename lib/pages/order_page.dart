@@ -56,7 +56,7 @@ class _OrderPageState extends State<OrderPage>{
                         void _confirmOrder() async{
                           double total = 0;
                           itemsSnapshot.data.forEach((data) { total+=(data.item.price*data.item.quantity); });
-                          await orders.comfirmOrder(widget.orderID, total);
+                          await orders.comfirmOrder(widget.orderID, total, DateTime.now());
                           await messages.deleteNotificationNotRead(_tableID, 'order');
                           await itemsSnapshot.data.forEach((item) {
                             item.doc.update({

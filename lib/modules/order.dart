@@ -5,7 +5,7 @@ class Orders{
   String orderID;
   bool checkout;
   double total;
-  Timestamp date;
+  Timestamp date, receivedTime;
   bool received;
   bool requestCheckOut;
   Timestamp timeRCO; //Request Checkout
@@ -24,7 +24,8 @@ class Orders{
     @required this.waiterID,
     @required this.timeRCO,
     @required this.waiterRCO,
-    @required this.cancelable
+    @required this.cancelable,
+    @required this.receivedTime
   });
   factory Orders.fromJson(Map<String, dynamic> json) =>
       Orders(
@@ -38,7 +39,8 @@ class Orders{
           waiterID: json['waiterID'],
           waiterRCO: json['waiterRCO'],
           timeRCO:  json['timeRCO'],
-          cancelable: json['cancelable']
+          cancelable: json['cancelable'],
+          receivedTime: json['receivedTime']
       );
 }
 class OrderSnapshot{
