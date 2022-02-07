@@ -1,16 +1,18 @@
-# do_an_tn_app
+# App của quản lý/thu ngân
 
-A new Flutter application.
+Ứng dụng di động hỗ trợ cho quản lý/thu ngân trong quán cafe (sử dụng cho tablet).
 
-## Getting Started
+Công nghệ sử dụng: Flutter và Firebase.
 
-This project is a starting point for a Flutter application.
+Ứng dụng bao gồm các chức năng:
 
-A few resources to get you started if this is your first Flutter project:
++ Theo dõi trạng thái đơn hàng của từng bàn và thông tin của đơn hàng.
++ Sử dụng FCM(Firebase Cloud Messaging) để thông báo khi có yêu cầu mới từ bên App của nhân viên.
++ Quản lý danh sách đồ uống trong menu
++ Quản lý danh sách nhân viên
++ Chat với nhân viên
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Mục tiêu: Hỗ trợ quản lý việc đặt đồ uống trong quán cafe.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![image](https://user-images.githubusercontent.com/63271639/152771946-dc08a8c0-1be6-43ec-a31a-ce72f2de54f7.png)
+
